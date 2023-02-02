@@ -1,0 +1,138 @@
+from collections import Counter
+
+with open('customer.txt') as inFile:
+    linesOfInputFile = inFile.readlines()
+    inFile.close()
+
+dashes = linesOfInputFile[1].split()
+lenDashes = [len(dashes[0])]
+
+for i in range (1, len(dashes),):
+    lenDashes.append(lenDashes[i-1] + len(dashes[i]) + 1)
+
+lCustomers = []
+line = []
+
+for i in range (2, len(linesOfInputFile), ):
+    line.clear()
+    line.append(linesOfInputFile[i][0:lenDashes[0]])
+    for j in range(1, len(lenDashes), ):
+        line.append(linesOfInputFile[i][lenDashes[j-1]:lenDashes[j]])
+
+    lCustomers.append(dict(uname=line[0].strip(), passwd=line[1].strip(), 
+        lname=line[2].strip(), fname=line[3].strip(), addr=line[4].split(), 
+        zone=line[5].strip(), sex=line[6].strip(), age=line[7].strip(), 
+        limit=line[8].strip(), balance=line[9].strip(), creditcard=line[10].strip(), 
+        email=line[11].strip(), active=line[12].strip()))
+
+with open('zonecost.txt') as inFile:
+    linesOfInputFile = inFile.readlines()
+    inFile.close()
+
+dashes = linesOfInputFile[1].split()
+lenDashes = [len(dashes[0])]
+
+for i in range (1, len(dashes),):
+    lenDashes.append(lenDashes[i-1] + len(dashes[i]) + 1)
+
+lZone = []
+line = []
+
+for i in range (2, len(linesOfInputFile), ):
+    line.clear()
+    line.append(linesOfInputFile[i][0:lenDashes[0]])
+    for j in range(1, len(lenDashes), ):
+        line.append(linesOfInputFile[i][lenDashes[j-1]:lenDashes[j]])
+
+    lZone.append(dict(zoneid=line[0].strip(), zonedesc=line[1].strip(), 
+        price=line[2].strip()))
+
+lnames = []
+
+for i in range (0, len(lCustomers), ):
+    if (lCustomers[i]['active'] == '1') and (lCustomers[i]['zone'] == '1'):
+        lnames.append(lCustomers[i]['lname'])
+
+
+print("The names of people who are active and live in toronto are: ")
+print(lnames)
+
+
+##Output the BARCODE and the PRODDESC for each product that has been purchased by at 
+#least two customers.  
+
+with open('lineitem.txt') as inFile:
+    linesOfInputFile = inFile.readlines()
+    inFile.close()
+
+dashes = linesOfInputFile[1].split()
+lenDashes = [len(dashes[0])]
+
+for i in range (1, len(dashes),):
+    lenDashes.append(lenDashes[i-1] + len(dashes[i]) + 1)
+
+lineItem = []
+line = []
+
+for i in range (2, len(linesOfInputFile), ):
+    line.clear()
+    line.append(linesOfInputFile[i][0:lenDashes[0]])
+    for j in range(1, len(lenDashes), ):
+        line.append(linesOfInputFile[i][lenDashes[j-1]:lenDashes[j]])
+
+    lineItem.append(dict(uname=line[0].strip(), date=line[1].strip(), 
+        time=line[2].strip(),barcode=line[3].strip(), quantitiy=line[4].strip(), 
+        price=line[5].strip()))
+#print("\n\n")
+#print( lineItem)
+
+with open('products.txt') as inFile:
+    linesOfInputFile = inFile.readlines()
+    inFile.close()
+
+dashes = linesOfInputFile[1].split()
+lenDashes = [len(dashes[0])]
+
+for i in range (1, len(dashes),):
+    lenDashes.append(lenDashes[i-1] + len(dashes[i]) + 1)
+
+products = []
+line = []
+
+for i in range (2, len(linesOfInputFile), ):
+    line.clear()
+    line.append(linesOfInputFile[i][0:lenDashes[0]])
+    for j in range(1, len(lenDashes), ):
+        line.append(linesOfInputFile[i][lenDashes[j-1]:lenDashes[j]])
+
+    products.append(dict(barcode=line[0].strip(), price=line[1].strip(), 
+        proddesc=line[2].strip(), MFG=line[3].strip(), supplier=line[4].strip(), 
+        taxable=line[5].strip(),category=line[6].strip(), salePrecent=line[7].strip()))
+#print("\nProducts:\n")
+#print(products)
+
+barcodes = []
+countDict = {}
+counted = []
+for i in range(0,len(lineItem)):
+    barcodes.append(lineItem[i]['barcode'])
+
+
+
+
+countDict = dict(Counter(barcodes))
+##print(countDict)
+
+for i in range(0,len(countDict)):
+    if(countDict[barcodes[i]]>1):
+        counted.append(barcodes[i])
+
+noDBarcodes = [*set(counted)]
+##print(noDBarcodes)
+print("\n\nThe barcodes that are bought more than once are: ")
+for i in range (0, len(noDBarcodes), ):
+    for j in range(0,len(products)):
+        if (noDBarcodes[i] == products[j]['barcode']):
+            print(noDBarcodes[i],products[j]['proddesc'])
+    
+##print(barcodes)
